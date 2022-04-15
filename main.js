@@ -22,15 +22,19 @@ app.post("/upload", (req, res) => {
     const bucket = storage.bucket("gs://upload-docs-afc28.appspot.com")
 
     // Gives me a "file" instance (like a reference to the file on firebase storage)
-    const file = bucket.file("smokey.jpeg")
+    const file = bucket.file("smokey.png")
 
     // Create a stream to write to
     const firebaseStream = file.createWriteStream()
 
-    req.on("data", (chunk) => {
-        firebaseStream.write(chunk)
-        // console.log(chunk)
-    })
+    // Just a shorter syntax (pipe a readable stream to a writeable stream)
+    req.pipe(firebaseStream)
+
+    // Longer syntax
+    // req.on("data", (chunk) => {
+    //     firebaseStream.write(chunk)
+    //     // console.log(chunk)
+    // })
 
     req.on("end", () => {
         firebaseStream.end()
